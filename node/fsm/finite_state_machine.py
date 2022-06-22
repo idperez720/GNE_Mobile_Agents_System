@@ -20,18 +20,21 @@ def run_state(communicator):
         return
     else:
         x = np.array(list(map(float, msg[0:-2]))).reshape(30)
+        
 
-    
+
+    l = x[10:-2]
+    x = x[0:10]
     # Defino mis vectores x, l, z
 
     x_array = mp.Array('d', 10)
     l_array = mp.Array('d', 20)
     z_array = mp.Array('d', 20)
+
     for i in range(len(x)):
-        if i < 10:
-            x_array[i] = x[i]
-        else:
-            l_array[i] = x[i]
+        x_array[i] = x[i]
+    for i in range(len(l)):
+        l_array[i] = l[i]
 
     z_array = mp.Array('d', 20)
     for i in range(20):
@@ -40,7 +43,7 @@ def run_state(communicator):
     
     # # Launches main process
     stop_flag = False
-    print('Nodo: ', communicator.__node_number)
+    print('Nodo: ', communicator._node_number)
     while not stop_flag:
 
         message = np.hstack(((x_array, l_array))) # Estructura el mensaje
@@ -52,13 +55,13 @@ def run_state(communicator):
 
         if(not stop_flag): # Si no hay que parar    
             neighbors_info = np.array(list(map(float, msg[:-2]))).reshape(30, -1)
-            new_info = DT_GNE(x_array, l_array, z_array, neighbors_info, 0.01, communicator.__node_number)
+    
+            new_x, new_l, new_z = DT_GNE(x_array[0:10], l_array[0:20], z_array[0:20], neighbors_info, 0.01, communicator._node_number)
 
-            for i in range(len(new_info)):
-                if i < 10:
-                    x_array[i] = new_info[i]
-                elif i < 30:
-                    l_array[i] = new_info[i]
-                else:
-                    z_array[i] = new_info[i]
-
+            #ACTUALIZAR VECTORES
+            for i in range(len(new_x)):
+                x_array[i] = new_x[i]
+            for i in range(len(new_l)):
+                l_array[i] = new_l[i]
+            for i in range(len(new_z)):
+                z_array[i] = new_z[i]

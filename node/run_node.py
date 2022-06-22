@@ -5,6 +5,8 @@ import numpy as np
 from communication.node_communicator import Node_Comunicator
 from fsm.finite_state_machine import *
 
+sys.path.append('./')
+
 # Creates server socket and launches server
 communicator = Node_Comunicator()
 communicator.bind_server_socket()

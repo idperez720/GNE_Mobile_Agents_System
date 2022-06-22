@@ -3,11 +3,11 @@ import multiprocessing as mp
 import sys, socket, time
 
 sys.path.append('./')
-from robot_model.model import *
+#from robot_model.model import *
 
 class Node_Comunicator():
 
-    def __init__(self):
+    def __init__(self, dt=0.01):
         self._station_ip_adress = '127.0.0.1'
         self._buffer_size = 256
         self._msg_delimiter = '/'
@@ -19,6 +19,7 @@ class Node_Comunicator():
         self._ps = np.zeros((3, 1)) # x-y-phi
         self._robot_log = np.zeros((3, 1)) # x-y-phi
         self._node_number = 0
+        self._dt = dt
 
         # Multiprocessing variables
         self._robot_log_array = mp.Array('d', 3)    # Multiprocessing array with [xs, ys, phis]
@@ -30,18 +31,19 @@ class Node_Comunicator():
         # Station socket (as server)
         self._station_sckt = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._station_sckt.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        
         ip = input('Ingresar ip: ')
-        if ip[-3:] == 2:
+        if ip[-1] == '2':
             self._node_number = 1
-        elif ip[-3:] == 3:
+        elif ip[-1] == '3':
             self._node_number = 2
-        elif ip[-3:] == 4:
+        elif ip[-1] == '4':
             self._node_number = 3
-        elif ip[-3:] == 5:
+        elif ip[-1] == '5':
             self._node_number = 4
-        elif ip[-3:] == 6:
+        elif ip[-1] == '6':
             self._node_number = 5
-
+        print(self._node_number)
         self._station_sckt.bind((ip, 2000))
 
     def connect_to_camera(self):

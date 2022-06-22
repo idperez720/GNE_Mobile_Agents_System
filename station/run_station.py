@@ -10,12 +10,12 @@ from scipy.linalg import block_diag
 
 class Main_Station(Camera_Server):
 
-    def __init__(self, robots=['red', 'blue', 'purple', 'yellow', 'green']):
+    def __init__(self, robots=['red', 'blue', 'purple', 'yellow', 'lime']):
         
         Camera_Server.__init__(self, robots=robots)
 
         # Core variables
-        self._dt = 0.1
+        self._dt = 0.01
 
         # Station variables
         self._system_info = np.zeros((30, self._n)) #x, l
@@ -29,7 +29,7 @@ class Main_Station(Camera_Server):
         x50 = np.array([0.45, 0.12])
 
         self._init_pos = block_diag(x10, x20, x30, x40, x50)
-        self._init_pos = np.transpose(np.hstack((self._init_pos, np.zeros((5, 20)))))
+        self._init_pos = np.transpose(np.hstack((self._init_pos, np.ones((5, 20)))))
 
         # Create Sockets
         self._station_sckts = []
@@ -112,4 +112,4 @@ class Main_Station(Camera_Server):
 
 
 if __name__ == '__main__':
-    station = Main_Station(robots=['blue', 'purple', 'red'])
+    station = Main_Station(robots=['blue', 'purple', 'red', 'green', 'lime'])
