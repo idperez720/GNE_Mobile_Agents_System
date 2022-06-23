@@ -9,7 +9,7 @@ class Node_Comunicator():
 
     def __init__(self, dt=0.01):
         self._station_ip_adress = '127.0.0.1'
-        self._buffer_size = 256
+        self._buffer_size = 2048
         self._msg_delimiter = '/'
         self._msg_end = 'z'
         self._msg_tail = self._msg_delimiter + self._msg_end + self._msg_delimiter
@@ -33,6 +33,7 @@ class Node_Comunicator():
         self._station_sckt.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         
         ip = input('Ingresar ip: ')
+        ip = f'127.0.0.{ip}'
         if ip[-1] == '2':
             self._node_number = 1
         elif ip[-1] == '3':
@@ -71,7 +72,9 @@ class Node_Comunicator():
             return False
 
     def get_message_from_station(self):
-        msg = self._station_conn.recv(self._buffer_size).decode('utf-8').split(self._msg_delimiter)
+        msg = self._station_conn.recv(self._buffer_size).decode('utf-8')
+        print(msg)
+        msg = msg.split(self._msg_delimiter)
         return msg, self.check_message(msg)
 
     def send_message_to_station(self, message): #msg should be a list or numpy array

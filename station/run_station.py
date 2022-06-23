@@ -20,7 +20,7 @@ class Main_Station(Camera_Server):
         # Station variables
         self._system_info = np.zeros((30, self._n)) #x, l
         self._graph = cycle(len(robots)) # Communication graphs
-
+        self._sim_time = np.linspace(0,300, 3000)
 
         x10 = np.array([-0.4, 0.12])
         x20 = np.array([-0.4, 0.42])
@@ -64,9 +64,13 @@ class Main_Station(Camera_Server):
             msg = sckt.recv(self._buffer_size).decode('utf-8').split(self._msg_delimiter)
             if(msg.count(self._msg_end) == 1 and msg[-2] == self._msg_end):
                 self._system_info[:, i] = list(map(float, msg[:-2]))
+            
             else:
                 print('ERROR: an incomplete message was received from:', self._node_addresses[i])
                 self._keep_running[0] = 0
+
+            #print()
+            #print(self._system_info)
     
     def update_mp_targets(self):
         for i in range(self._n):
@@ -85,21 +89,17 @@ class Main_Station(Camera_Server):
         stop_flag = False
 
         # Main loop
-        while not stop_flag:
+        for i in self._sim_time:
+            print('================================================')
+            print(f'Iteration: {i}')
             self.update_system_info()
             time.sleep(self._dt)
 
             for i, sckt in enumerate(self._station_sckts):
                 neighbors_info = self._system_info[:, np.where(self._graph[i, :] == 1)].reshape(-1)
-                print(neighbors_info)
+                neighbors_info = np.round(neighbors_info, 3)
                 msg = self._msg_delimiter.join(list(map(str, neighbors_info)))
-                sckt.sendall(bytes(msg + self._msg_tail, 'utf-8'))
-
-            msg = input('Ingrese Mensaje: ')
-            if msg == 'exit':
-                break
-            else:
-                self.send_message_to_all_nodes(msg)
+                sckt.sendall(bytes(msg+self._msg_tail, 'utf-8'))
 
     def send_message_to_all_nodes(self, msg):
         for sckt in self._station_sckts:

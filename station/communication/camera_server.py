@@ -26,7 +26,7 @@ class Camera_Server():
             self._node_addresses.append(self._robots_addresses[key][-1])
 
         #Params
-        self._buffer_size = 256
+        self._buffer_size = 2048
         self._msg_delimiter = '/'
         self._msg_end = 'z'
         self._msg_tail = self._msg_delimiter + self._msg_end + self._msg_delimiter

@@ -111,7 +111,6 @@ bi = np.array([0.2]*20)
 def F(xi, x_i):
     ri = np.array([random.uniform(-1,1), random.uniform(-1,1)])
     Fi = ri + np.multiply(9, xi)
-    print(np.shape(Fi))
     return Fi
 
 

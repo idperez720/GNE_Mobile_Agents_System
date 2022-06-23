@@ -1,4 +1,5 @@
 from hashlib import new
+from tracemalloc import stop
 import numpy as np
 import multiprocessing as mp
 import time, sys
@@ -23,7 +24,7 @@ def run_state(communicator):
         
 
 
-    l = x[10:-2]
+    l = x[10:]
     x = x[0:10]
     # Defino mis vectores x, l, z
 
@@ -50,9 +51,10 @@ def run_state(communicator):
         communicator.send_message_to_station(message) # Envia el mensaje a la estación
 
         msg, complete_message = communicator.get_message_from_station() # Obtiene el mensaje de la station
+        print(msg)
 
-        stop_flag = (not complete_message) or (msg[0] == 'exit') # Variable que indica si debe parar
-
+        if not complete_message or msg[0] == 'exit': # Variable que indica si debe parar 
+            stop_flag = True
         if(not stop_flag): # Si no hay que parar    
             neighbors_info = np.array(list(map(float, msg[:-2]))).reshape(30, -1)
     
